@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>RM Science Academy Results Portal</title>
+
+<style>
+body{
+    margin:0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg,#0a3d62,#3c6382);
+    color:#333;
+}
+
+/* Header */
+.header{
+    text-align:center;
+    padding:25px;
+    color:white;
+}
+
+.header h1{
+    margin:0;
+    font-size:32px;
+}
+
+.header p{
+    margin:5px;
+    opacity:0.9;
+}
+
+/* Main box */
+.container{
+    max-width:500px;
+    margin:30px auto;
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.2);
+    text-align:center;
+}
+
+/* input */
+input{
+    width:90%;
+    padding:12px;
+    margin-top:15px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    font-size:16px;
+}
+
+button{
+    margin-top:15px;
+    padding:12px 25px;
+    border:none;
+    background:#0a3d62;
+    color:white;
+    font-size:16px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#3c6382;
+}
+
+/* result card */
+.card{
+    margin-top:20px;
+    text-align:left;
+    padding:20px;
+    border-radius:12px;
+    background:#f8f9fa;
+    border-left:6px solid #0a3d62;
+    display:none;
+}
+
+.row{
+    margin:10px 0;
+    font-size:16px;
+}
+
+.label{
+    font-weight:bold ;
+    color:#0a3d62;
+}
+
+/* status */
+.pass{
+    color:green;
+    font-weight:bold;
+}
+
+.fail{
+    color:red;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div style="display:flex; align-items:center; justify-content:center; gap:15px; padding:20px; background:#0a3d62; color:white; border-radius:10px; margin:10px;">
+
+    <img src="logo.jpeg" alt="Logo" width="70" style="border-radius:50%;">
+
+    <div style="text-align:left;">
+        <h1 style="margin:0;">RM Science Academy</h1>
+        <p style="margin:0; font-size:14px;">Examination Results Portal</p>
+    </div>
+
+</div>
+
+<div class="container">
+
+    <input type="text" id="search" placeholder="Enter Student Name">
+
+    <button onclick="searchResult()">View Result</button>
+
+    <div class="card" id="card">
+
+        <div class="row">
+            <span class="label">Name:</span>
+            <span id="name"></span>
+        </div>
+
+        <div class="row">
+            <span class="label">Marks:</span>
+            <span id="marks"></span>/100
+        </div>
+
+        <div class="row">
+            <span class="label">Rank:</span>
+            <span id="rank"></span>
+        </div>
+
+        <div class="row">
+            <span class="label">Grade:</span>
+            <span id="grade"></span>
+        </div>
+
+        <div class="row">
+            <span class="label">Status:</span>
+            <span id="status"></span>
+        </div>
+
+
+
+    </div>
+</div>
+
+<script>
+
+let students = [];
+
+fetch("results.csv")
+.then(res => res.text())
+.then(data => {
+
+    let rows = data.split("\n").slice(1);
+
+    rows.forEach(r => {
+        let c = r.split(",");
+
+        if(c.length >= 4){
+            students.push({
+                name: c[0].trim(),
+                marks: c[1].trim(),
+                rank: c[2].trim(),
+                grade: c[3].trim()
+            });
+        }
+    });
+
+});
+
+function searchResult(){
+
+    let val = document.getElementById("search").value.toLowerCase();
+
+     let search = document.getElementById("search").value.trim().toLowerCase();
+
+let s = students.find(x =>
+    x.name.trim().toLowerCase().includes(search)
+);
+
+    let card = document.getElementById("card");
+
+    if(s){
+
+        card.style.display = "block";
+
+        document.getElementById("name").innerText = s.name;
+        document.getElementById("marks").innerText = s.marks;
+        document.getElementById("rank").innerText = s.rank;
+        document.getElementById("grade").innerText = s.grade;
+        document.getElementById("today").innerText = s.today;
+        document.getElementById("status").innerHTML =
+            (s.marks >= 50) ? "<span class='pass'>PASS</span>" : "<span class='fail'>FAIL</span>";
+
+    }else{
+        alert("Student not found");
+    }
+}
+
+</script>
+
+</body>
+</html>
